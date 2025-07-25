@@ -11,7 +11,8 @@ import {
   useEvmAddress,
   useSendEvmTransaction,
 } from "@coinbase/cdp-hooks"
-import { Heart, Loader2 } from "lucide-react"
+import { Heart, Loader2, CreditCard, AlertTriangle } from "lucide-react"
+import { useWalletBalance, useOnramp } from "@/hooks/useOnramp"
 
 // 🎯 Ash Nouruzi's wallet address (where donations go)
 const DONATION_ADDRESS = "0xeDeE7Ee27e99953ee3E99acE79a6fbc037E31C0D"
@@ -31,6 +32,11 @@ function DonationForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [txHash, setTxHash] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [addressCopied, setAddressCopied] = useState(false)
+
+  // Balance checking and onramp
+  const { hasEnoughBalance, formattedBalance, isChecking, recheckBalance } = useWalletBalance(amount)
+  const { openOnramp, isCreatingSession, error: onrampError, clearError } = useOnramp()
 
   // Authentication state
   const [email, setEmail] = useState("")
@@ -101,8 +107,26 @@ function DonationForm() {
     }
   }
 
+  const handleCopyAddress = async () => {
+    if (!evmAddress) return
+    
+    try {
+      await navigator.clipboard.writeText(evmAddress)
+      setAddressCopied(true)
+      setTimeout(() => setAddressCopied(false), 2000) // Reset after 2 seconds
+    } catch (error) {
+      console.error('Failed to copy address:', error)
+    }
+  }
+
   const handleDonate = async () => {
     if (!evmAddress) return
+
+    // Check balance before attempting transaction
+    if (!hasEnoughBalance && !isChecking) {
+      setError(`Insufficient balance. You have ${formattedBalance} ETH but need ${amount} ETH.`)
+      return
+    }
 
     setIsLoading(true)
     setError(null)
@@ -127,6 +151,16 @@ function DonationForm() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleAmountChange = (newAmount: string) => {
+    setAmount(newAmount)
+    // Balance will be rechecked automatically via the useWalletBalance hook
+  }
+
+  const handleBuyMoreETH = async () => {
+    clearError()
+    await openOnramp(amount)
   }
 
   // Success state
@@ -230,7 +264,7 @@ function DonationForm() {
 
         <div className="amount-selection">
           <label>Choose donation amount:</label>
-          <select value={amount} onChange={(e) => setAmount(e.target.value)} className="amount-select">
+          <select value={amount} onChange={(e) => handleAmountChange(e.target.value)} className="amount-select">
             <option value="0.002">0.002 ETH (~$5)</option>
             <option value="0.005">0.005 ETH (~$12)</option>
             <option value="0.01">0.01 ETH (~$25)</option>
@@ -238,6 +272,60 @@ function DonationForm() {
             <option value="0.05">0.05 ETH (~$125)</option>
           </select>
         </div>
+
+        {/* Balance information */}
+        <div className="balance-info">
+          {isChecking ? (
+            <div className="balance-checking">
+              <Loader2 className="loading-icon" />
+              <span>Checking balance...</span>
+            </div>
+          ) : (
+            <div className={`balance-display ${hasEnoughBalance ? 'sufficient' : 'insufficient'}`}>
+              {hasEnoughBalance ? (
+                <span className="balance-sufficient">
+                  ✅ Sufficient balance: {formattedBalance} ETH
+                </span>
+              ) : (
+                <div className="balance-insufficient">
+                  <AlertTriangle className="warning-icon" />
+                  <span>Insufficient balance: {formattedBalance} ETH (need {amount} ETH)</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Show buy more ETH option if insufficient balance */}
+        {!hasEnoughBalance && !isChecking && evmAddress && (
+          <div className="onramp-section">
+            <p className="onramp-description">
+              You need more ETH to complete this donation. Buy ETH directly to your wallet:
+            </p>
+            <button 
+              onClick={handleBuyMoreETH} 
+              disabled={isCreatingSession}
+              className="onramp-button"
+            >
+              {isCreatingSession ? (
+                <>
+                  <Loader2 className="loading-icon" />
+                  Opening...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="onramp-icon" />
+                  Buy {amount} ETH with Card
+                </>
+              )}
+            </button>
+            {onrampError && (
+              <div className="error-message onramp-error">
+                {onrampError}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="message-input">
           <label>Optional message for Ash Nouruzi:</label>
@@ -251,7 +339,7 @@ function DonationForm() {
           />
         </div>
 
-        <button onClick={handleDonate} disabled={isLoading} className="donate-button">
+        <button onClick={handleDonate} disabled={isLoading} className="donate-button mb-4">
           {isLoading ? (
             <>
               <Loader2 className="loading-icon" />
@@ -262,10 +350,15 @@ function DonationForm() {
           )}
         </button>
 
-        <div className="donation-info">
-          <p>Sent on Base network • Low fees</p>
+        <div className="donation-info mb-12">
           <p>
-            Your wallet: {evmAddress?.slice(0, 6)}...{evmAddress?.slice(-4)}
+            Your wallet: <span 
+              onClick={handleCopyAddress}
+              className="wallet-address clickabl"
+              title="Click to copy full address"
+            >
+              {addressCopied ? 'Copied!' : `${evmAddress?.slice(0, 6)}...${evmAddress?.slice(-4)}`}
+            </span>
           </p>
         </div>
 
