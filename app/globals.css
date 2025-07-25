@@ -1,0 +1,466 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.linktree-container {
+  max-width: 680px;
+  width: 100%;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* Profile Section */
+.profile-section {
+  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-image {
+  margin-bottom: 24px;
+}
+
+.profile-image img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0052ff;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.profile-info h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.bio {
+  color: #a3a3a3;
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  max-width: 480px;
+}
+
+/* Links Section */
+.links-section {
+  margin-bottom: 48px;
+}
+
+.link-button {
+  display: grid;
+  grid-template-columns: 20px 0px 1fr;
+  align-items: center;
+  padding: 16px 20px;
+  margin: 12px 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.link-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.link-icon {
+  width: 20px;
+  height: 20px;
+  grid-column: 1;
+  justify-self: center;
+}
+
+.link-text {
+  grid-column: 3;
+  text-align: center;
+  margin-left: -16px;
+}
+
+/* Donation Section */
+.donation-section {
+  margin-top: 32px;
+}
+
+.donation-signin,
+.donation-form {
+  background: transparent;
+  padding: 24px;
+  text-align: center;
+}
+
+.support-header {
+  margin-bottom: 16px;
+}
+
+.support-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.support-icon {
+  width: 24px;
+  height: 24px;
+  color: #ff6b6b;
+}
+
+.creator-bio {
+  color: #a3a3a3;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.donation-signin p {
+  color: #a3a3a3;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+/* Sign In Button */
+.donation-signin button,
+.donate-button,
+.donate-again-btn {
+  background: #0052ff;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.donation-signin button:hover,
+.donate-button:hover:not(:disabled),
+.donate-again-btn:hover {
+  background: #0041cc;
+  transform: translateY(-1px);
+}
+
+.donate-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-icon {
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+/* Form Elements */
+.amount-selection,
+.message-input {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.amount-selection label,
+.message-input label {
+  display: block;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.amount-select,
+.message-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.amount-select:focus,
+.message-field:focus {
+  outline: none;
+  border-color: #0052ff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Success State */
+.donation-success {
+  background: transparent;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.success-icon {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.success-heart {
+  width: 48px;
+  height: 48px;
+  color: #ff6b6b;
+}
+
+.donation-success h3 {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.donation-success p {
+  color: #a3a3a3;
+  margin-bottom: 16px;
+}
+
+.donation-message {
+  color: #fff;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.transaction-link {
+  color: #0052ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.transaction-link:hover {
+  text-decoration: underline;
+}
+
+/* Info Text */
+.powered-by,
+.donation-info {
+  color: #a3a3a3;
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+.donation-info p {
+  margin: 4px 0;
+}
+
+/* Error State */
+.error-message {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+/* Loading State */
+.donation-loading {
+  padding: 40px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+  color: #0052ff;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer */
+.linktree-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.linktree-footer p {
+  color: #a3a3a3;
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .linktree-container {
+    padding: 32px 16px;
+  }
+
+  .profile-image img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profile-info h1 {
+    font-size: 20px;
+  }
+
+  .link-button {
+    padding: 14px 16px;
+  }
+}
+
+/* Authentication Forms */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.email-input,
+.otp-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.email-input:focus,
+.otp-input:focus {
+  outline: none;
+  border-color: #0052ff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.email-input::placeholder,
+.otp-input::placeholder {
+  color: #666666;
+}
+
+.otp-input {
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 4px;
+  font-weight: 600;
+}
+
+.auth-button {
+  background: #0052ff;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.auth-button:hover:not(:disabled) {
+  background: #0041cc;
+  transform: translateY(-1px);
+}
+
+.auth-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.back-button,
+.sign-out-btn {
+  background: transparent;
+  color: #a3a3a3;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.back-button:hover,
+.sign-out-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Remove the old CDP modal styles since we're not using them anymore */
+[data-cdp-modal],
+[data-cdp-modal-content] {
+  display: none !important;
+}
+
+/* Add this at the end of the file */
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #000000;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
