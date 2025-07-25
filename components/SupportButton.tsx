@@ -222,10 +222,8 @@ function DonationForm() {
       <div className="donation-form">
         <div className="support-header">
           <h3>
-            <Heart className="support-icon" />
-            Support Ash Nouruzi
+            Support Ash Nouruzi 🤍
           </h3>
-          <p className="creator-bio">DevRel at Coinbase Developer Platform</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
