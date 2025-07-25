@@ -278,7 +278,12 @@ function DonationForm() {
         {error && <div className="error-message">{error}</div>}
 
         <div className="amount-selection">
-          <label>Choose donation amount:</label>
+          <label 
+            className="text-xs text-muted-foreground"
+            style={{ opacity: 0.7, fontSize: '0.85em' }}
+          >
+            Choose donation amount:
+          </label>
           <select value={amount} onChange={(e) => handleAmountChange(e.target.value)} className="amount-select">
             <option value="5">$5 USDC</option>
             <option value="12">$12 USDC</option>
@@ -288,21 +293,7 @@ function DonationForm() {
           </select>
         </div>
 
-      
-
-        {/* Show add funds button if insufficient balance */}
-        {!hasEnoughBalance && !isChecking && evmAddress && (
-          <div className="text-center mt-4">
-            <button 
-              onClick={() => setShowFundingModal(true)} 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 mx-auto"
-            >
-              <CreditCard className="h-4 w-4" />
-              Add Funds
-            </button>
-          </div>
-        )}
-
+{/* 
         <div className="message-input">
           <label>Optional message for Ash Nouruzi:</label>
           <input
@@ -313,13 +304,17 @@ function DonationForm() {
             className="message-field"
             maxLength={100}
           />
-        </div>
+        </div> */}
 
-        <button onClick={handleDonate} disabled={isLoading} className="donate-button mb-4">
-          {isLoading ? (
+        <button 
+          onClick={hasEnoughBalance ? handleDonate : handleBuyMoreETH} 
+          disabled={isLoading || isCreatingSession} 
+          className="donate-button mb-4"
+        >
+          {(isLoading || isCreatingSession) ? (
             <>
               <Loader2 className="loading-icon" />
-              Sending...
+              {hasEnoughBalance ? "Sending..." : "Opening..."}
             </>
           ) : (
             `Support Ash Nouruzi with $${amount} USDC`
