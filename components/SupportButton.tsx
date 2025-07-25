@@ -118,7 +118,7 @@ function DonationForm() {
           chainId: 8453, // Base mainnet (low fees)
           type: "eip1559",
         },
-        network: "base-mainnet",
+        network: "base",
       })
 
       setTxHash(result.transactionHash)
