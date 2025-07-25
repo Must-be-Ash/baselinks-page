@@ -3,11 +3,12 @@ import { generateJwt } from '@coinbase/cdp-sdk/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userAddress } = await request.json()
+    const { userAddress, guestCheckout } = await request.json()
 
-    if (!userAddress) {
+    // For guest checkout, userAddress can be null
+    if (!userAddress && !guestCheckout) {
       return NextResponse.json(
-        { error: 'User address is required' },
+        { error: 'User address is required for regular onramp' },
         { status: 400 }
       )
     }
@@ -34,21 +35,29 @@ export async function POST(request: NextRequest) {
     })
 
     // Call CDP Session Token API with proper authentication
+    const requestBody = guestCheckout 
+      ? {
+          // Guest checkout doesn't require specific addresses
+          addresses: [],
+          assets: ['ETH', 'USDC']
+        }
+      : {
+          addresses: [
+            {
+              address: userAddress,
+              blockchains: ['base']
+            }
+          ],
+          assets: ['ETH', 'USDC']
+        }
+
     const response = await fetch('https://api.developer.coinbase.com/onramp/v1/token', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwt}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        addresses: [
-          {
-            address: userAddress,
-            blockchains: ['base']
-          }
-        ],
-        assets: ['ETH', 'USDC']
-      })
+      body: JSON.stringify(requestBody)
     })
 
     if (!response.ok) {

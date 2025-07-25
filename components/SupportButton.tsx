@@ -11,11 +11,15 @@ import {
   useEvmAddress,
   useSendEvmTransaction,
 } from "@coinbase/cdp-hooks"
-import { Heart, Loader2, CreditCard, AlertTriangle } from "lucide-react"
+import { Heart, Loader2, CreditCard, AlertTriangle, Apple } from "lucide-react"
 import { useWalletBalance, useOnramp } from "@/hooks/useOnramp"
+import GuestCheckout from "./GuestCheckout"
+import FundingModal from "./FundingModal"
 
 // 🎯 Ash Nouruzi's wallet address (where donations go)
 const DONATION_ADDRESS = "0xeDeE7Ee27e99953ee3E99acE79a6fbc037E31C0D"
+// USDC contract on Base mainnet
+const USDC_CONTRACT_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
 
 function DonationForm() {
   const isInitialized = useIsInitialized()
@@ -27,7 +31,7 @@ function DonationForm() {
   const sendTransaction = useSendEvmTransaction()
 
   const [isMounted, setIsMounted] = useState(false)
-  const [amount, setAmount] = useState("0.005")
+  const [amount, setAmount] = useState("12")
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [txHash, setTxHash] = useState<string | null>(null)
@@ -36,7 +40,13 @@ function DonationForm() {
 
   // Balance checking and onramp
   const { hasEnoughBalance, formattedBalance, isChecking, recheckBalance } = useWalletBalance(amount)
-  const { openOnramp, isCreatingSession, error: onrampError, clearError } = useOnramp()
+  const { openOnramp, openGuestCheckout, isCreatingSession, error: onrampError, clearError } = useOnramp()
+  
+  // Guest checkout state
+  const [showGuestCheckout, setShowGuestCheckout] = useState(false)
+  
+  // Funding modal state
+  const [showFundingModal, setShowFundingModal] = useState(false)
 
   // Authentication state
   const [email, setEmail] = useState("")
@@ -124,7 +134,7 @@ function DonationForm() {
 
     // Check balance before attempting transaction
     if (!hasEnoughBalance && !isChecking) {
-      setError(`Insufficient balance. You have ${formattedBalance} ETH but need ${amount} ETH.`)
+      setError(`Insufficient balance. You have $${formattedBalance} USDC but need $${amount} USDC.`)
       return
     }
 
@@ -132,13 +142,13 @@ function DonationForm() {
     setError(null)
 
     try {
-      const valueInWei = BigInt(Math.floor(Number.parseFloat(amount) * 1e18))
+      const valueInUSDC = BigInt(Math.floor(Number.parseFloat(amount) * 1e6)) // USDC has 6 decimals
 
       const result = await sendTransaction({
         evmAccount: evmAddress,
         transaction: {
-          to: DONATION_ADDRESS,
-          value: valueInWei,
+          to: USDC_CONTRACT_ADDRESS,
+          data: `0xa9059cbb000000000000000000000000${DONATION_ADDRESS.slice(2)}${valueInUSDC.toString(16).padStart(64, '0')}`,
           chainId: 8453, // Base mainnet (low fees)
           type: "eip1559",
         },
@@ -163,6 +173,11 @@ function DonationForm() {
     await openOnramp(amount)
   }
 
+  const handleGuestCheckout = async (paymentMethod: "CARD" | "APPLE_PAY") => {
+    clearError()
+    await openGuestCheckout(amount, paymentMethod)
+  }
+
   // Success state
   if (txHash) {
     return (
@@ -171,7 +186,7 @@ function DonationForm() {
           <Heart className="success-heart" />
         </div>
         <h3>Thank You for Supporting Ash Nouruzi!</h3>
-        <p>Your donation of {amount} ETH was sent successfully!</p>
+        <p>Your donation of ${amount} USDC was sent successfully!</p>
         {message && <p className="donation-message">"{message}"</p>}
         <a
           href={`https://basescan.org/tx/${txHash}`}
@@ -184,7 +199,7 @@ function DonationForm() {
         <button
           onClick={() => {
             setTxHash(null)
-            setAmount("0.005")
+            setAmount("12")
             setMessage("")
           }}
           className="donate-again-btn"
@@ -265,65 +280,26 @@ function DonationForm() {
         <div className="amount-selection">
           <label>Choose donation amount:</label>
           <select value={amount} onChange={(e) => handleAmountChange(e.target.value)} className="amount-select">
-            <option value="0.002">0.002 ETH (~$5)</option>
-            <option value="0.005">0.005 ETH (~$12)</option>
-            <option value="0.01">0.01 ETH (~$25)</option>
-            <option value="0.02">0.02 ETH (~$50)</option>
-            <option value="0.05">0.05 ETH (~$125)</option>
+            <option value="5">$5 USDC</option>
+            <option value="12">$12 USDC</option>
+            <option value="25">$25 USDC</option>
+            <option value="50">$50 USDC</option>
+            <option value="125">$125 USDC</option>
           </select>
         </div>
 
-        {/* Balance information */}
-        <div className="balance-info">
-          {isChecking ? (
-            <div className="balance-checking">
-              <Loader2 className="loading-icon" />
-              <span>Checking balance...</span>
-            </div>
-          ) : (
-            <div className={`balance-display ${hasEnoughBalance ? 'sufficient' : 'insufficient'}`}>
-              {hasEnoughBalance ? (
-                <span className="balance-sufficient">
-                  ✅ Sufficient balance: {formattedBalance} ETH
-                </span>
-              ) : (
-                <div className="balance-insufficient">
-                  <AlertTriangle className="warning-icon" />
-                  <span>Insufficient balance: {formattedBalance} ETH (need {amount} ETH)</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+      
 
-        {/* Show buy more ETH option if insufficient balance */}
+        {/* Show add funds button if insufficient balance */}
         {!hasEnoughBalance && !isChecking && evmAddress && (
-          <div className="onramp-section">
-            <p className="onramp-description">
-              You need more ETH to complete this donation. Buy ETH directly to your wallet:
-            </p>
+          <div className="text-center mt-4">
             <button 
-              onClick={handleBuyMoreETH} 
-              disabled={isCreatingSession}
-              className="onramp-button"
+              onClick={() => setShowFundingModal(true)} 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 mx-auto"
             >
-              {isCreatingSession ? (
-                <>
-                  <Loader2 className="loading-icon" />
-                  Opening...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="onramp-icon" />
-                  Buy {amount} ETH with Card
-                </>
-              )}
+              <CreditCard className="h-4 w-4" />
+              Add Funds
             </button>
-            {onrampError && (
-              <div className="error-message onramp-error">
-                {onrampError}
-              </div>
-            )}
           </div>
         )}
 
@@ -346,7 +322,7 @@ function DonationForm() {
               Sending...
             </>
           ) : (
-            `Support Ash Nouruzi with ${amount} ETH`
+            `Support Ash Nouruzi with $${amount} USDC`
           )}
         </button>
 
@@ -365,6 +341,54 @@ function DonationForm() {
         <button onClick={handleSignOut} className="sign-out-btn">
           Sign Out
         </button>
+
+        {/* Funding Modal */}
+        <FundingModal
+          isOpen={showFundingModal}
+          onClose={() => setShowFundingModal(false)}
+          amount={amount}
+          currentBalance={formattedBalance}
+          onConnectedWalletFunding={handleBuyMoreETH}
+          onGuestCheckout={handleGuestCheckout}
+          isLoading={isCreatingSession}
+        />
+      </div>
+    )
+  }
+
+  // Show guest checkout if requested
+  if (showGuestCheckout) {
+    const estimatedUSDAmount = Number.parseFloat(amount) // USDC = USD 1:1
+    
+    return (
+      <div className="donation-signin">
+        <div className="support-header">
+          <h3>
+            <Heart className="support-icon" />
+            Support Me - Guest Checkout
+          </h3>
+        </div>
+        
+        <GuestCheckout
+          onStartGuestCheckout={handleGuestCheckout}
+          estimatedUSDAmount={estimatedUSDAmount}
+          isLoading={isCreatingSession}
+        />
+        
+        {onrampError && (
+          <div className="error-message">
+            {onrampError}
+          </div>
+        )}
+        
+        <button
+          onClick={() => setShowGuestCheckout(false)}
+          className="back-button mt-4"
+        >
+          Back to Sign In
+        </button>
+        
+        <p className="powered-by">Powered by Coinbase</p>
       </div>
     )
   }
@@ -399,11 +423,28 @@ function DonationForm() {
               Sending...
             </>
           ) : (
-            "Sign In"
+            "Sign In with Coinbase"
           )}
         </button>
       </form>
-      <p className="powered-by">Powered by Coinbase • No wallet needed</p>
+      
+      <div className="guest-checkout-option">
+        <div className="or-divider">
+          <span>or</span>
+        </div>
+        <button
+          onClick={() => setShowGuestCheckout(true)}
+          className="guest-checkout-btn"
+        >
+          <CreditCard className="inline w-4 h-4 mr-2" />
+          Pay with Debit Card (No Account Needed)
+        </button>
+        <p className="guest-checkout-info">
+          US residents • $5-$500 limit • Debit card or Apple Pay
+        </p>
+      </div>
+      
+      <p className="powered-by">Powered by Coinbase</p>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { EvmAddress } from "@coinbase/cdp-core"
 
 const ONRAMP_API_BASE = "https://api.developer.coinbase.com/onramp/v1"
 const BASE_RPC_URL = "https://mainnet.base.org"
+const USDC_CONTRACT_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
 
 export interface BalanceInfo {
   hasEnoughBalance: boolean
@@ -37,6 +38,7 @@ export async function checkWalletBalance(
   }
 
   try {
+    // Check USDC balance using ERC20 balanceOf method
     const response = await fetch(BASE_RPC_URL, {
       method: "POST",
       headers: {
@@ -44,8 +46,14 @@ export async function checkWalletBalance(
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
-        method: "eth_getBalance",
-        params: [address, "latest"],
+        method: "eth_call",
+        params: [
+          {
+            to: USDC_CONTRACT_ADDRESS,
+            data: `0x70a08231000000000000000000000000${address.slice(2)}`
+          },
+          "latest"
+        ],
         id: 1,
       }),
     })
@@ -56,11 +64,12 @@ export async function checkWalletBalance(
       throw new Error(data.error.message)
     }
 
-    const balanceWei = BigInt(data.result)
-    const requiredWei = BigInt(Math.floor(Number.parseFloat(requiredAmount) * 1e18))
+    const balanceHex = data.result
+    const balanceWei = BigInt(balanceHex)
+    const requiredWei = BigInt(Math.floor(Number.parseFloat(requiredAmount) * 1e6)) // USDC has 6 decimals
     
-    const balanceEth = Number(balanceWei) / 1e18
-    const formattedBalance = balanceEth.toFixed(4)
+    const balanceUsdc = Number(balanceWei) / 1e6
+    const formattedBalance = balanceUsdc.toFixed(2)
     
     return {
       hasEnoughBalance: balanceWei >= requiredWei,
@@ -69,7 +78,7 @@ export async function checkWalletBalance(
       isChecking: false,
     }
   } catch (error) {
-    console.error("Error checking balance:", error)
+    console.error("Error checking USDC balance:", error)
     return {
       hasEnoughBalance: false,
       currentBalance: "0",
@@ -116,14 +125,14 @@ export function generateOnrampURL(
   const baseURL = "https://pay.coinbase.com/buy/select-asset"
   const params = new URLSearchParams({
     sessionToken,
-    defaultAsset: "ETH",
+    defaultAsset: "USDC",
     defaultNetwork: "base",
     fiatCurrency: "USD",
     defaultPaymentMethod: "CARD",
   })
   
   if (presetAmount) {
-    params.append("presetFiatAmount", (Number.parseFloat(presetAmount) * 25).toString()) // Convert ETH to USD estimate
+    params.append("presetFiatAmount", presetAmount) // USDC = USD 1:1
   }
 
   return `${baseURL}?${params.toString()}`
@@ -132,19 +141,68 @@ export function generateOnrampURL(
 export function generateOneClickBuyURL(
   sessionToken: string,
   userAddress: string,
-  ethAmount: string
+  usdcAmount: string
 ): string {
   const baseURL = "https://pay.coinbase.com/buy/select-asset"
-  const estimatedUSDAmount = Number.parseFloat(ethAmount) * 2500 // Rough ETH to USD conversion
+  const usdAmount = Number.parseFloat(usdcAmount) // USDC = USD 1:1
   
   const params = new URLSearchParams({
     sessionToken,
-    defaultAsset: "ETH",
+    defaultAsset: "USDC",
     defaultNetwork: "base",
     defaultPaymentMethod: "CARD",
     fiatCurrency: "USD",
-    presetFiatAmount: estimatedUSDAmount.toString(),
+    presetFiatAmount: usdAmount.toString(),
   })
 
   return `${baseURL}?${params.toString()}`
+}
+
+export function generateGuestCheckoutURL(
+  sessionToken: string,
+  usdcAmount: string,
+  options: {
+    asset?: "ETH" | "USDC"
+    paymentMethod?: "CARD" | "APPLE_PAY"
+    minAmount?: number
+    maxAmount?: number
+  } = {}
+): string {
+  const {
+    asset = "USDC",
+    paymentMethod = "CARD",
+    minAmount = 5,
+    maxAmount = 500
+  } = options
+
+  const baseURL = "https://pay.coinbase.com/buy/select-asset"
+  const usdAmount = Math.max(
+    minAmount,
+    Math.min(maxAmount, Number.parseFloat(usdcAmount)) // USDC = USD 1:1
+  )
+  
+  const params = new URLSearchParams({
+    sessionToken,
+    defaultAsset: asset,
+    defaultNetwork: "base",
+    defaultPaymentMethod: paymentMethod,
+    fiatCurrency: "USD",
+    presetFiatAmount: usdAmount.toString(),
+  })
+
+  return `${baseURL}?${params.toString()}`
+}
+
+export interface GuestCheckoutLimits {
+  weeklyLimit: number
+  minimumAmount: number
+  supportedPaymentMethods: string[]
+  supportedCountries: string[]
+}
+
+export const GUEST_CHECKOUT_LIMITS: GuestCheckoutLimits = {
+  weeklyLimit: 500,
+  minimumAmount: 5,
+  supportedPaymentMethods: ["CARD", "APPLE_PAY"],
+  supportedCountries: ["US"]
 }
