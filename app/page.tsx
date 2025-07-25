@@ -20,12 +20,12 @@ export default function AshNouruziLinktree() {
       <div className="links-section">
         <a href="https://x.com/Must_be_Ash" className="link-button" target="_blank" rel="noopener noreferrer">
           <Twitter className="link-icon" />
-          <span className="link-text">Follow on Twitter</span>
+          <span className="link-text">Twitter</span>
         </a>
 
         <a href="https://www.mustbeash.com/" className="link-button" target="_blank" rel="noopener noreferrer">
           <Globe className="link-icon" />
-          <span className="link-text">Visit Website</span>
+          <span className="link-text">Website</span>
         </a>
 
         <a
@@ -35,7 +35,7 @@ export default function AshNouruziLinktree() {
           rel="noopener noreferrer"
         >
           <Linkedin className="link-icon" />
-          <span className="link-text">Connect on LinkedIn</span>
+          <span className="link-text">LinkedIn</span>
         </a>
       </div>
 
