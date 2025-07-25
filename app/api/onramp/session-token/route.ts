@@ -58,12 +58,13 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
+    console.log('CDP API response:', JSON.stringify(data, null, 2))
 
     return NextResponse.json({
       success: true,
       data: {
-        token: data.data.token,
-        channelId: data.data.channel_id || '',
+        token: data.token || data.data?.token,
+        channelId: data.channel_id || data.data?.channel_id || '',
         expiresAt: Date.now() + (5 * 60 * 1000) // 5 minutes
       }
     })
