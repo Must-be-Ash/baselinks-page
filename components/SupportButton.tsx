@@ -128,9 +128,12 @@ function DonationForm() {
       setAddressCopied(true)
       setTimeout(() => setAddressCopied(false), 2000) // Reset after 2 seconds
     } catch (error) {
-      console.error('Failed to copy address:', error)
+      // Log error only in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to copy address:', error)
+      }
     }
-  }
+  };
 
   const handleDonate = async () => {
     if (!evmAddress) return

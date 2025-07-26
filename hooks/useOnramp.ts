@@ -88,7 +88,10 @@ export function useOnramp() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to open onramp"
       setError(errorMessage)
-      console.error("Onramp error:", err)
+      // Log error only in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Onramp error:", err)
+      }
     } finally {
       setIsCreatingSession(false)
     }
@@ -134,7 +137,10 @@ export function useOnramp() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to open guest checkout"
       setError(errorMessage)
-      console.error("Guest checkout error:", err)
+      // Log error only in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Guest checkout error:", err)
+      }
     } finally {
       setIsCreatingSession(false)
     }

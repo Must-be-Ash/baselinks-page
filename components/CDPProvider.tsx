@@ -4,8 +4,14 @@ import type React from "react"
 import { CDPHooksProvider } from "@coinbase/cdp-hooks"
 import { useEffect, useState } from "react"
 
+const projectId = process.env.NEXT_PUBLIC_CDP_PROJECT_ID
+
+if (!projectId) {
+  throw new Error("NEXT_PUBLIC_CDP_PROJECT_ID environment variable is not set")
+}
+
 const cdpConfig = {
-  projectId: "03058f87-eb78-4ebc-8bb8-f8aeed57cefa",
+  projectId,
   basePath: "https://api.cdp.coinbase.com/platform",
   useMock: false,
   debugging: false,

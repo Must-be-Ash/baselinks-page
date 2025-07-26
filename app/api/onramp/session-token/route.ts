@@ -61,13 +61,20 @@ export async function POST(request: NextRequest) {
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('CDP API error:', response.status, errorText)
+      // Log error details only in development
+      if (process.env.NODE_ENV === 'development') {
+        const errorText = await response.text()
+        console.error('CDP API error:', response.status, errorText)
+      }
       throw new Error(`CDP API error: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
-    console.log('CDP API response:', JSON.stringify(data, null, 2))
+    
+    // Log response only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('CDP API response:', JSON.stringify(data, null, 2))
+    }
 
     return NextResponse.json({
       success: true,
@@ -79,9 +86,12 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Session token generation error:', error)
+    // Log error details only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Session token generation error:', error)
+    }
     return NextResponse.json(
-      { error: 'Failed to generate session token: ' + (error instanceof Error ? error.message : 'Unknown error') },
+      { error: 'Failed to generate session token' },
       { status: 500 }
     )
   }
