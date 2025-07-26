@@ -68,10 +68,10 @@ export default function AshNouruziLinktree() {
             spread={1.5}
             className="text-lg font-bold"
           >
-            Get your own baselinks
+            Get your own BaseLink
           </TextShimmer>
         </a>
-        <p className="powered-by">Powered by Coinbase</p>
+        <p className="powered-by">Powered by Coinbase Developer Platform</p>
       </div>
 
       <footer className="linktree-footer">
