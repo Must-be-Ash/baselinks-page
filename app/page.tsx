@@ -49,7 +49,7 @@ export default function AshNouruziLinktree() {
         </a>
       </div>
 
-      {/* Ash Nouruzi's Crypto Donation Section */}
+      {/* Crypto Donation Section */}
       <div className="donation-section">
         <SupportButton />
       </div>
@@ -71,6 +71,7 @@ export default function AshNouruziLinktree() {
             Get your own baselinks
           </TextShimmer>
         </a>
+        <p className="powered-by">Powered by Coinbase</p>
       </div>
 
       <footer className="linktree-footer">

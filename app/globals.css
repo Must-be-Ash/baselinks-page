@@ -299,7 +299,7 @@ body {
 .donation-info {
   color: #a3a3a3;
   font-size: 12px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .donation-info p {
@@ -355,7 +355,7 @@ body {
 
 /* Baselinks CTA */
 .baselinks-cta {
-  margin: 32px 0 24px 0;
+  margin: 16px 0 16px 0;
   text-align: center;
 }
 

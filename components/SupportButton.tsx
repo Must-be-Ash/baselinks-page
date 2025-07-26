@@ -30,6 +30,9 @@ function DonationForm() {
   const signOut = useSignOut()
   const sendTransaction = useSendEvmTransaction()
 
+  // Environment variable for profile name
+  const PROFILE_NAME = process.env.NEXT_PUBLIC_PROFILE_NAME!
+
   const [isMounted, setIsMounted] = useState(false)
   const [amount, setAmount] = useState("12")
   const [message, setMessage] = useState("")
@@ -185,7 +188,7 @@ function DonationForm() {
         <div className="success-icon">
           <Heart className="success-heart" />
         </div>
-        <h3>Thank You for Supporting Ash Nouruzi!</h3>
+        <h3>Thank You for Supporting {PROFILE_NAME}!</h3>
         <p>Your donation of ${amount} USDC was sent successfully!</p>
         {message && <p className="donation-message">"{message}"</p>}
         <a
@@ -204,7 +207,7 @@ function DonationForm() {
           }}
           className="donate-again-btn"
         >
-          Support Ash Nouruzi Again
+          Support {PROFILE_NAME} Again
         </button>
         <button onClick={handleSignOut} className="sign-out-btn">
           Sign Out
@@ -271,7 +274,7 @@ function DonationForm() {
       <div className="donation-form">
         <div className="support-header">
           <h3>
-            Support Ash Nouruzi 🤍
+            Support {PROFILE_NAME} <span className="text-xs text-muted-foreground"> 🤍</span>
           </h3>
         </div>
 
@@ -295,7 +298,7 @@ function DonationForm() {
 
 {/* 
         <div className="message-input">
-          <label>Optional message for Ash Nouruzi:</label>
+                      <label>Optional message for {PROFILE_NAME}:</label>
           <input
             type="text"
             value={message}
@@ -317,7 +320,7 @@ function DonationForm() {
               {hasEnoughBalance ? "Sending..." : "Opening..."}
             </>
           ) : (
-            `Support Ash Nouruzi with $${amount} USDC`
+            `Support ${PROFILE_NAME} with $${amount} USDC`
           )}
         </button>
 
@@ -393,8 +396,7 @@ function DonationForm() {
     <div className="donation-signin">
       <div className="support-header">
         <h3>
-          <Heart className="support-icon" />
-          Support Me
+        Support Me <span className="text-xs text-muted-foreground"> 🤍</span>
         </h3>
       </div>
       <p>Support my work in developer relations and blockchain education</p>
@@ -422,7 +424,7 @@ function DonationForm() {
           )}
         </button>
       </form>
-      
+{/*       
       <div className="guest-checkout-option">
         <div className="or-divider">
           <span>or</span>
@@ -437,9 +439,8 @@ function DonationForm() {
         <p className="guest-checkout-info">
           US residents • $5-$500 limit • Debit card or Apple Pay
         </p>
-      </div>
+      </div> */}
       
-      <p className="powered-by">Powered by Coinbase</p>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 {
-  "name": "Ash Nouruzi - Links & Support",
-  "short_name": "Ash Nouruzi",
-  "description": "DevRel at Coinbase Developer Platform",
+  "name": "Personal Links & Support",
+  "short_name": "Links",
+  "description": "Personal linktree with crypto donations",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
