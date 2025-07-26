@@ -353,9 +353,26 @@ body {
   }
 }
 
+/* Baselinks CTA */
+.baselinks-cta {
+  margin: 32px 0 24px 0;
+  text-align: center;
+}
+
+.baselinks-link {
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.baselinks-link:hover {
+  transform: translateY(-1px);
+}
+
 /* Footer */
 .linktree-footer {
-  margin-top: 48px;
+  margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }

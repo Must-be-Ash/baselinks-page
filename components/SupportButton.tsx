@@ -16,8 +16,8 @@ import { useWalletBalance, useOnramp } from "@/hooks/useOnramp"
 import GuestCheckout from "./GuestCheckout"
 import FundingModal from "./FundingModal"
 
-// 🎯 Ash Nouruzi's wallet address (where donations go)
-const DONATION_ADDRESS = "0xeDeE7Ee27e99953ee3E99acE79a6fbc037E31C0D"
+// 🎯 Wallet address (where donations go)
+const DONATION_ADDRESS = process.env.NEXT_PUBLIC_DONATION_ADDRESS!
 // USDC contract on Base mainnet
 const USDC_CONTRACT_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
 
