@@ -1,6 +1,6 @@
-# BaseLinks
+# tip-chain
 
-Create your own crypto donation page in 4 simple steps with BaseLinks. This tool helps you generate personalized `.env` files for your crypto donation links page using the Coinbase Developer Platform (CDP).
+Create your own crypto donation page in 4 simple steps with tip-chain. This tool helps you generate personalized `.env` files for your crypto donation links page using the Coinbase Developer Platform (CDP).
 
 ## 🚀 Quick Start
 
@@ -66,7 +66,7 @@ NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/yourprofile/"
 ### Step 4: Configure CORS Settings
 
 1. Go to [CDP CORS Configuration](https://portal.cdp.coinbase.com/products/embedded-wallets/cors)
-2. Add your BaseLinks URL to the allowed origins
+2. Add your app's URL to the allowed origins
 3. This enables the crypto donation functionality to work properly
 
 ## 🛠️ Installation

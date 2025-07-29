@@ -57,7 +57,7 @@ export default function AshNouruziLinktree() {
       {/* Get Your Own Baselinks CTA */}
       <div className="baselinks-cta">
         <a 
-          href="https://baselinks.xyz" 
+          href="https://tip-chain.com" 
           target="_blank" 
           rel="noopener noreferrer"
           className="baselinks-link"
@@ -68,14 +68,14 @@ export default function AshNouruziLinktree() {
             spread={1.5}
             className="text-lg font-bold"
           >
-            Get your own BaseLink
+            Make your own TipChain app
           </TextShimmer>
         </a>
         <p className="powered-by">Powered by Coinbase Developer Platform</p>
       </div>
 
       <footer className="linktree-footer">
-        <p>© 2025 baselinks.xyz</p>
+        <p>© 2025 tip-chain.com</p>
       </footer>
     </div>
   )
